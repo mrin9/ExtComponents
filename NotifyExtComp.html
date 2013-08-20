@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NotifyComp</title>
+    <link rel="stylesheet" type="text/css" href="notify/css/notify.css">
+    <link rel="stylesheet" type="text/css" href="notify/css/xContainer.css">
+
+	<!--
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.com/ext/gpl/4.2.1/resources/css/ext-all.css">
+    <script type="text/javascript" src="http://cdn.sencha.com/ext/gpl/4.2.1/ext-all.js"></script>
+    -->
+    <link rel="stylesheet" type="text/css" href="../ExtJS/resources/css/ext-all.css">
+    <script type="text/javascript" src="../ExtJS/ext-all.js"></script>
+
+	<script type="text/javascript" src="notify/xContainer.js"></script>
+	<script type="text/javascript" src="notify/notify.js"></script>
+
+	<script>
+
+
+	
+Ext.onReady(function () {
+
+
+var btnMenu = Ext.create('Ext.button.Split', {
+    text: 'Notification',
+    menu: new Ext.menu.Menu({
+        items: [
+		{text: 'show',   handler: function(){n3.show();}},
+		{text: 'Hide',   handler: function(){n3.hide();}},
+		{text: 'Disable',handler: function(){n3.disable();}},
+		{text: 'ShowAt' ,handler: function(){n3.showBy(p,'tl-br?',50 );}},
+		{text: 'close',  handler: function(){n3.close();}},
+		{text: 'Destroy',handler: function(){Ext.destroy(n3);}},
+		{text: 'Close Container',handler: function(){ nContainer.close();}}
+        ]
+    })
+});
+
+var tb = Ext.create('Ext.toolbar.Toolbar', {
+   //renderTo:Ext.getBody(),
+   style:'border-top: 1px solid rgb(240,240,240);',
+   items: [btnMenu]
+   
+});
+
+
+var n1 = Ext.create('Ext.notify', {
+      title   : 'Title',
+      descr   : 'A detailed description of the content that you like to inform to the user',
+	  width   : 300,
+	  height  : 90,
+	  //margin  :'10x',
+	  showIcon:true,
+	  closable:true,
+	  closeAction:'hide',
+	  showOkBtn:true,
+	  glyph     :'M',
+	  glyphColor:'tomato',
+	  ui:'light',
+	  roundedCorners:true
+});
+
+var n2 = Ext.create('Ext.notify', {
+      title   : 'Title',
+      descr   : 'A detailed description of the content that you like to inform to the user',
+	  width   : 300,
+	  height  : 70,
+	  //margin  :'10x',
+	  showIcon:true,
+	  closable:true,
+	  closeAction:'hide',
+	  glyph   :'H',
+	  glyphColor:'limegreen',
+	  ui:'dark',
+	  roundedCorners:true
+});
+
+var n3 = Ext.create('Ext.notify', {
+      descr   : 'A detailed description of the content that you like to inform to the user',
+	  width   : 300,
+	  height  : 70,
+	  //margin  :'10x',
+	  closable:false,
+	  showImg :false,
+	  closeAction:'hide',
+	  glyph     :'',
+	  glyphColor:'limegreen',
+	  ui:'dark',
+	  floating:true,
+	  shadow:true,
+	  roundedCorners:true
+});
+
+
+var nContainer = Ext.create('Ext.nContainer', {
+      title    : 'Title',
+      descr   : 'A detailed description of the content that you like to inform to the user',
+	  tpl:'<p> abcd </p>',
+	  width   : 400,
+	  height  : 400,
+	  showIcon:true,
+	  closable:false,
+	  closeAction:'hide',
+	  glyphColor:'yellow',
+      items :[tb, n1, n2,n3],
+	  roundedCorners:true,
+	  renderTo: Ext.getBody()
+  });
+
+
+
+/*
+var p = Ext.create('Ext.panel.Panel', {
+    title: 'Hello',
+    width: 600,
+	height: 500,
+	margin:10,
+    items :[btnMenu, nWin1],
+	//bodyStyle:'background-color:rgb(145,145,145)',
+    tbar :[tb],
+	renderTo: Ext.getBody()
+});
+*/
+
+});
+
+</script>
+	</head>
+<body bgcolor="white"></body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NotifyComp</title>
+    <link rel="stylesheet" type="text/css" href="notify/css/notify.css">
+    <link rel="stylesheet" type="text/css" href="../ExtJS/resources/css/ext-all.css">
+    <script type="text/javascript" src="../ExtJS/ext-all.js"></script>
+	<script type="text/javascript" src="notify/notify.js"></script>
+
+	<script>
+
+/*
+*/
+	
+	
+
+	
+Ext.onReady(function () {
+
+	var notifyWindow = Ext.create('Ext.notify', {
+	  //title   : 'Title',
+	  descr   : 'A detailed description of the content that you like to inform to the user',
+	  width   : 300,
+	  height  : 10,
+	  showIcon:true,
+	  closable:false,
+	  closeAction:'hide',
+	  //showOkBtn:true,
+	  iconSrc :'../img/dribbble.png',
+	  renderTo: Ext.getBody() 
+	});
+
+
+});
+
+</script>
+	</head>
+<body bgcolor="lightgray"></body>
+</html>
