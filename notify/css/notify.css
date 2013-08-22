@@ -33,7 +33,7 @@
   border-color: rgb(60, 60, 60);
   box-shadow:rgba(20, 20, 20, 0.4) 0px 3px 8px 0px;
   cursor:move;
-  }
+}
   
 .x-notify-img {
   float: left;
@@ -64,7 +64,7 @@
 }
 .x-notify-close:hover {text-shadow: 1px 1px 1px darkgrey;}
 
-.x-notify-text {
+.x-notify-descr {
   margin: 0px;
   padding-right:14px;
   line-height: 18px;
@@ -72,7 +72,7 @@
   font-weight: normal;
 }
 
-.x-notify-header{
+.x-notify-title{
   margin: 0px;
   padding: 0px;
   text-decoration: none;

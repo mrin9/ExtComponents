@@ -57,8 +57,9 @@ var n1 = Ext.create('Ext.notify', {
 	  showOkBtn:true,
 	  glyph     :'M',
 	  glyphColor:'tomato',
-	  ui:'light',
-	  roundedCorners:true
+	  ui:'dark',
+	  roundedCorners:true,
+	  manager:'main'
 });
 
 var n2 = Ext.create('Ext.notify', {
@@ -66,14 +67,18 @@ var n2 = Ext.create('Ext.notify', {
       descr   : 'A detailed description of the content that you like to inform to the user',
 	  width   : 300,
 	  height  : 70,
-	  //margin  :'10x',
 	  showIcon:true,
 	  closable:true,
 	  closeAction:'hide',
 	  glyph   :'H',
 	  glyphColor:'limegreen',
-	  ui:'dark',
-	  roundedCorners:true
+	  ui:'darkglass',
+	  autoDestroy: false,
+	  roundedCorners:true,
+	  margin:10,
+  	  manager:'main'
+	  
+
 });
 
 var n3 = Ext.create('Ext.notify', {
@@ -88,23 +93,35 @@ var n3 = Ext.create('Ext.notify', {
 	  glyphColor:'limegreen',
 	  ui:'dark',
 	  floating:true,
-	  shadow:true,
-	  roundedCorners:true
-});
+	  shadow:false,
+	  roundedCorners:false,
+	  manager:'main'
+
+  });
 
 
 var nContainer = Ext.create('Ext.nContainer', {
-      title    : 'Title',
-      descr   : 'A detailed description of the content that you like to inform to the user',
-	  tpl:'<p> abcd </p>',
-	  width   : 400,
-	  height  : 400,
+      title   : 'This is a Title',
+	  width   : 700,
+	  height  : 600,
 	  showIcon:true,
 	  closable:false,
 	  closeAction:'hide',
 	  glyphColor:'yellow',
       items :[tb, n1, n2,n3],
 	  roundedCorners:true,
+	  ui:'darkglass',
+	  tools:[
+		{glyph:'E', 
+		 handler:function(){
+ 		   var me = this;
+		   me.close();
+		 }
+		},
+		{glyph:'M', handler:function(){ alert("Clicked on M");} },
+		{glyph:'H', handler:function(){ alert("Clicked on H");} }
+	  ],
+	  style:'background: radial-gradient(ellipse at center, #d4e4ef 0%,#86aecc 100%);',
 	  renderTo: Ext.getBody()
   });
 

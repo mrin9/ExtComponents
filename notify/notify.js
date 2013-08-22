@@ -22,21 +22,27 @@ Ext.define('Ext.notify', {
 	showYesBtn   :false,
 	showNoBtn    :false,
 	showCancelBtn:false,
-	closeAction:'destroy',
+	closeAction  :'destroy',
 	roundedCorners:true,
 	glyph      :'T',
 	glyphColor :'hsl(80, 70%, 55%)',
 	ui         :'dark',
-	
-	slideInAnimation: 'easeIn',
+	autoDestroy			: true,
+	autoDestroyDelay	: 7000,
+    slideInDelay		: 1500,
+    slideDownDelay		: 1000,
+    fadeDelay			: 500,
+    stickOnClick		: true,
+    stickWhileHover		: true,
+	slideInAnimation	: 'easeIn',
 	
     renderTpl: [
 		'<tpl if="showGlyph">',
 		   '<div class="{baseCls}-img" aria-hidden="true" data-icon="{glyph}" style="color:{glyphColor}; border-radius:{borderRadius}; background:{imgBgStyle}; ">  </div>',
 		'</tpl>',
 		'<div class="{baseCls}-content"  <tpl if="showGlyph"> style="margin-left:64px;" </tpl> >',
-		   '<tpl if="showTitle"> <p class="{baseCls}-header">{title}</p> </tpl>',
-		   '<p class="{baseCls}-text">  {descr}</p>',
+		   '<tpl if="showTitle"> <p class="{baseCls}-title">{title}</p> </tpl>',
+		   '<p class="{baseCls}-descr">  {descr}</p>',
 	   '</div>',
 	   '<tpl if="showOkBtn || showYesBtn || showNoBtn || showCancelBtn">',
 		   '<ul class="{baseCls}-btn" >', 
@@ -49,6 +55,13 @@ Ext.define('Ext.notify', {
 	   '<tpl if="closable"><div class="{baseCls}-close" aria-hidden="true" data-icon="E"></div></tpl>',
     ],
 	
+	statics: {
+        defaultManager: {
+            notifications: [],
+            el: null
+        }
+    },
+
 	
     initComponent: function() {
 	  var me = this;
@@ -60,19 +73,38 @@ Ext.define('Ext.notify', {
       me.addEvents('close');
 	  
 	  if (me.ui==='dark'){
-	     ctStyle = ctStyle + " background: rgba(8,8,8,0.60); color: rgba(222, 222, 222, 0.9); ";
+	     ctStyle = ctStyle + "color: rgba(222, 222, 222, 0.9); background: rgba(8,8,8,0.60); ";
+	  }
+	  else if (me.ui==='darkglass'){
+	     ctStyle = ctStyle + "color: rgb(250, 250, 250); background-color: rgba(17, 17, 17, 0.478431); background-image: linear-gradient(rgba(242, 242, 242, 0.298039), rgba(221, 221, 221, 0.00784314) 50%, rgba(0, 0, 0, 0.117647) 50%, rgba(0, 0, 0, 0.298039));";
 	  }
 	  else{
 	     ctStyle = ctStyle + " background: rgba(248, 248, 248, 0.90);  color: rgba(8, 8, 8, 0.9); ";
 	  }
-	  
+	 
+	 
 	  if (me.roundedCorners==true){ctStyle = ctStyle + " border-radius:5px; ";}
 	  me.style = ctStyle;
 
- 	  //console.log('init comp');
-	  
+	  if (typeof me.manager == 'string') {
+          me.manager = Ext.getCmp(me.manager);
+      }
+      
+      // If no manager is provided or found, then the static object is used and the el property pointed to the body document.
+      if (!me.manager) {
+          me.manager = me.statics().defaultManager;
+      
+          if (!me.manager.el) {
+              me.manager.el = Ext.getBody();
+          }
+      }
+      
+      if (typeof me.manager.notifications == 'undefined') {
+          me.manager.notifications = [];
+      }
+  
 
-	  },
+	},
 
     initRenderData: function() {
         var me = this;
@@ -82,7 +114,7 @@ Ext.define('Ext.notify', {
 			showTitle : ((me.title=='')?false:true) ,
             descr     : me.descr,
 			closable  : me.closable,
-			imgBgStyle: me.ui==='dark'?' rgba(0, 0, 0, 0.3); ':' rgba(222, 222, 222, 0.3); ', 
+			imgBgStyle: me.ui==='dark' || me.ui==='darkglass' ?' rgba(0, 0, 0, 0.3); ':' rgba(222, 222, 222, 0.3); ', 
 			glyph     : me.glyph,
 			glyphColor: me.glyphColor,
 			showGlyph : ((me.glyph=='')?false:true) ,
@@ -102,6 +134,30 @@ Ext.define('Ext.notify', {
         if (!me.titleEl && me.title != '')   {me.titleEl = me.el.down('.' + me.baseCls + '-title');}else{me.showTitle = false;}
 		if (!me.descrEl)   {me.descrEl = me.el.down('.' + me.baseCls + '-descr');}
 		if (!me.closeEl && me.closable)   {me.closeEl = me.el.down('.' + me.baseCls + '-close');}
+		
+		if (me.stickOnClick) {
+            if (me.el) {
+                Ext.fly(me.el).on('click', me.cancelAutoDestroy, me);
+            }
+        }
+
+        if (me.autoDestroy) {
+            me.task = new Ext.util.DelayedTask(me.doAutoDestroy, me);
+            me.task.delay(me.autoDestroyDelay);
+        }
+
+        me.el.hover(
+            function () {
+                me.mouseIsOver = true;
+            },
+            function () {
+                me.mouseIsOver = false;
+            },
+            me
+        );
+		
+       //Ext.Array.include(me.manager.notifications, me);	
+		
 	},
 
 	afterRender: function() {
@@ -144,9 +200,6 @@ Ext.define('Ext.notify', {
     },
     
 	
-    beforeShow:function(){
-	   this.el.hide();
-	},
     
     onShow: function(){
         var me = this;
@@ -159,8 +212,35 @@ Ext.define('Ext.notify', {
     },
 	*/
 	
-    focus: Ext.emptyFn,
-	
+    cancelAutoDestroy: function() {
+        var me = this;
+
+        me.addClass('notification-fixed');
+        if (me.autoDestroy) {
+            me.task.cancel();
+            me.autoDestroy = false;
+        }
+    },
+
+    doAutoDestroy: function () {
+        var me = this;
+
+        /* Delayed destruction when mouse leaves the component.
+           Doing this before me.mouseIsOver is checked below to avoid a race condition while resetting event handlers */
+        me.el.hover(
+            function () {
+            },
+            function () {
+                me.hide();
+            },
+            me
+        );
+
+        if (!(me.stickWhileHover && me.mouseIsOver)) {
+            // Destroy immediately
+            me.hide();
+        }
+    },	
     setTitle: function(text) {
         var me = this;
         me.title = text;
